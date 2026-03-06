@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>AI Math Tutor</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+
+<div class="layout">
+
+  <!-- 좌측 사이드바 -->
+  <aside class="sidebar">
+    <h2 id="sidebar-title">🎓 교실</h2>
+
+    <div class="menu">
+      <button onclick="goPage('today')">🎯 오늘 학습</button>
+      <button onclick="goPage('report')">📈 학습 리포트</button>
+      <button onclick="goPage('wrongnote')">📖 오답 노트</button>
+    </div>
+
+    <button class="home-btn" onclick="goHome()">처음으로 돌아가기</button>
+
+    <div class="sidebar-chat">
+      <h3>채팅 기록</h3>
+      <div id="chat-box">기록 없음</div>
+    </div>
+
+    <div class="sidebar-step">
+      <h3>현재 학습 단계</h3>
+      <div id="study-step">대기중</div>
+    </div>
+
+    <div class="sidebar-token">
+      <h3>토큰 사용량</h3>
+      <div id="token-graph">그래프 자리(나중에 연결)</div>
+    </div>
+  </aside>
+
+  <!-- 우측 컨텐츠 -->
+  <main class="content">
+    <div id="page-container"></div>
+  </main>
+
+</div>
+
+<script src="assets/app.js"></script>
+<script>
+  initApp();
+</script>
+
+</body>
+</html>

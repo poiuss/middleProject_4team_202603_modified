@@ -1,0 +1,65 @@
+<h1>🎯 오늘 학습</h1>
+
+<!-- STEP 1: select_unit -->
+<section id="step-select_unit" class="card">
+  <h2>📖 오늘의 학습 단원</h2>
+  <label>어떤 단원을 배워볼까요?</label>
+  <select id="unit-select">
+    <option value="">단원 선택</option>
+    <option value="샘플단원1">샘플단원1</option>
+    <option value="샘플단원2">샘플단원2</option>
+  </select>
+  <button id="btn-start">공부 시작하기</button>
+</section>
+
+<!-- STEP 2: explain -->
+<section id="step-explain" class="card" style="display:none;">
+  <h2>📖 <span id="unit-title-explain"></span> 개념 익히기</h2>
+  <div class="box" id="explain-text">개념 설명 텍스트(나중에 API로 채움)</div>
+  <div class="row">
+    <button id="btn-tts">🎙️ 루미 선생님 목소리로 듣기</button>
+    <button id="btn-go-student">내용 이해 완료! 내가 설명해보기 🗣️</button>
+  </div>
+</section>
+
+<!-- STEP 3: student_explain -->
+<section id="step-student_explain" class="card" style="display:none;">
+  <h2>🗣️ <span id="unit-title-student"></span> 직접 설명하기</h2>
+  <textarea id="student-text" rows="6" placeholder="어떻게 이해했는지 적어줘"></textarea>
+  <button id="btn-student-done">설명 완료! ✨</button>
+</section>
+
+<!-- STEP 4: explain_feedback -->
+<section id="step-explain_feedback" class="card" style="display:none;">
+  <h2>👨‍🏫 이해도 검토 결과</h2>
+  <div class="box" id="concept-feedback">PASS/FAIL 결과(나중에 API로 채움)</div>
+  <div class="row">
+    <button id="btn-go-quiz">이제 문제 풀기 📝</button>
+    <button id="btn-go-reexplain">보충 설명 듣고 문제 풀기 ➡️</button>
+  </div>
+</section>
+
+<!-- STEP 5: re_explain -->
+<section id="step-re_explain" class="card" style="display:none;">
+  <h2>📖 보충 학습</h2>
+  <div class="box" id="reexplain-text">보충 설명(기존 설명 재노출)</div>
+  <button id="btn-reexplain-done">이제 정말 준비 완료! 문제 풀기 📝</button>
+</section>
+
+<!-- STEP 6: ask_question -->
+<section id="step-ask_question" class="card" style="display:none;">
+  <h2>📝 퀴즈 (ID: <span id="quiz-id">-</span>)</h2>
+  <div class="box" id="quiz-problem">문제 영역(이미지/수식 포함)</div>
+  <textarea id="answer-text" rows="6" placeholder="정답과 풀이를 적어주세요."></textarea>
+  <button id="btn-submit">제출하기</button>
+</section>
+
+<!-- STEP 7: evaluation -->
+<section id="step-evaluation" class="card" style="display:none;">
+  <h2>👨‍🏫 AI 선생님의 피드백</h2>
+  <div class="box" id="ai-feedback">피드백 텍스트</div>
+  <div class="row">
+    <button id="btn-next-problem">다른 문제 풀기</button>
+    <button id="btn-next-unit">다음 단원으로 가기 ➡️</button>
+  </div>
+</section>
