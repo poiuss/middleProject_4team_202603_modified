@@ -1,0 +1,105 @@
+.layout {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+}
+
+.sidebar {
+    width: 280px;
+}
+
+.content {
+    flex: 1;
+}
+
+/* 카드 */
+.card {
+    border: 1px solid #ddd;
+    padding: 16px;
+    margin: 16px 0;
+    background: #fff;
+}
+
+.box {
+    border: 1px solid #eee;
+    padding: 12px;
+    min-height: 60px;
+    background: #fafafa;
+}
+
+.row {
+    display: flex;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.metric {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+/* 입력 */
+select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+}
+
+/* 로그인 */
+.login-box input {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+}
+
+.login-box {
+    width: 320px;
+    margin: 120px auto;
+    padding: 24px;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+/* 사이드바 메뉴 */
+.menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 메뉴 버튼 */
+.menu button {
+    width: 80%;
+    padding: 10px 14px;
+    text-align: left;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+/* hover 효과 */
+.menu button:hover {
+    background: #ececec;
+}
+
+/* 사이드바 기타 섹션 */
+.sidebar-chat,
+.sidebar-step,
+.sidebar-token {
+    margin-top: 20px;
+}
+
+/* 뒤로가기 링크 */
+.back-link {
+    margin: 6px 0 14px 25px;
+    font-size: 13px;
+    color: #080808;
+    cursor: pointer;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: #333;
+}

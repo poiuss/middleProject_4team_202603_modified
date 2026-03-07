@@ -1,3 +1,6 @@
+
+##### 서버실행 : python -m uvicorn server:app --reload --port 8000
+
 """
 server.py  ─  FastAPI 애플리케이션 진입점
 
