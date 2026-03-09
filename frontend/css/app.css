@@ -1,105 +1,682 @@
+@font-face {
+  font-family: 'Binggrae';
+  src: url('../assets/fonts/Binggrae.ttf') format('truetype');
+}
+
+/* ===== 전역 폰트 설정 ===== */
+html, body, input, button, textarea, select {
+    font-family: 'Binggrae', sans-serif;
+}
+
+/* 로그인 화면 전체 중앙 정렬 */
+body.login-page {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f6fa;
+}
+
+/* 로그인 전체 박스 */
+.login-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 로그인 카드 */
+.login-card {
+    width: 400px;
+    padding: 40px;
+    border: 1px solid #ddd;
+    background: #fff;
+    box-sizing: border-box;
+}
+
+/* 제목 */
+.login-card h1 {
+    margin: 0 0 24px 0;
+    text-align: center;
+    font-size: 28px;
+}
+
+/* 로그인 폼 */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 로그인 입력창 */
+.login-form input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+}
+
+/* 버튼 가로 배치 */
+.btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* 버튼 동일 너비 */
+.btn-group button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+}
+
+.btn-group button:hover {
+    background: #ececec;
+}
+
+input[type="password"]{
+  letter-spacing: 2px;
+}
+
+/* 모달 */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+/* 숨김 */
+.hidden {
+    display: none;
+}
+
+/* 회원가입 모달 내용 */
+.modal-content {
+    width: 600px;
+    max-width: 90%;
+    background: #fff;
+    padding: 40px 30px;
+    box-sizing: border-box;
+}
+
+/* 회원가입 입력창 */
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+}
+
+/* 캐릭터 선택 영역 */
+.character-section {
+    margin-bottom: 16px;
+}
+
+.character-title {
+    margin: 8px 0 10px 0;
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.character-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.character-btn {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.character-btn span{
+    margin-top:8px;
+    font-size:15px;
+}
+
+.character-btn:hover {
+    background: #ececec;
+}
+
+.character-btn.selected {
+    border: 2px solid #333;
+    background: #dfe6f3;
+    font-weight: bold;
+}
+
+.character-btn img{
+width:90px;
+height:90px;
+object-fit:contain;
+}
+
+/* 모달 버튼 */
+.modal-btn-group {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-btn-group button {
+    flex: 1;
+    padding: 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background: #f7f7f7;
+}
+
+.modal-btn-group button:hover {
+    background: #ececec;
+}
+
+/* =========================
+   app.html 화면 복구용
+========================= */
+
+/* 앱 전체 레이아웃 */
+body {
+    margin: 0;
+    background: #f5f6fa;
+}
+
 .layout {
     display: flex;
-    gap: 24px;
-    padding: 24px;
 }
 
+
+/* 왼쪽 사이드바 */
 .sidebar {
-    width: 280px;
+    width:300px;
+    background:#f5f6fa;
+    padding:30px;
+    box-sizing:border-box;
 }
 
-.content {
-    flex: 1;
+
+.sidebar h2 {
+    margin: 0 0 24px 0;
+    font-size: 30px;
+    font-weight: bold;
 }
 
-/* 카드 */
-.card {
-    border: 1px solid #ddd;
-    padding: 16px;
-    margin: 16px 0;
-    background: #fff;
-}
-
-.box {
-    border: 1px solid #eee;
-    padding: 12px;
-    min-height: 60px;
-    background: #fafafa;
-}
-
-.row {
-    display: flex;
-    gap: 12px;
-    margin-top: 12px;
-}
-
-.metric {
-    font-size: 32px;
-    font-weight: 700;
-}
-
-/* 입력 */
-select, textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 6px 0;
-}
-
-/* 로그인 */
-.login-box input {
-    width: 100%;
-    padding: 8px;
-    margin: 6px 0;
-}
-
-.login-box {
-    width: 320px;
-    margin: 120px auto;
-    padding: 24px;
-    border: 1px solid #ddd;
-    background: #fff;
-}
-
-/* 사이드바 메뉴 */
 .menu {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* 메뉴 버튼 */
-.menu button {
-    width: 80%;
-    padding: 10px 14px;
-    text-align: left;
-    border: 1px solid #ddd;
-    background: #f7f7f7;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.2s;
+.menu button,
+.back-link{
+    background:#e9e9e9;
+    border-radius:15px;
+    padding:10px 15px;
+    margin:4px 0;
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+
+    font-size:18px;
 }
 
-/* hover 효과 */
-.menu button:hover {
-    background: #ececec;
-}
-
-/* 사이드바 기타 섹션 */
-.sidebar-chat,
-.sidebar-step,
-.sidebar-token {
-    margin-top: 20px;
-}
-
-/* 뒤로가기 링크 */
-.back-link {
-    margin: 6px 0 14px 25px;
-    font-size: 13px;
-    color: #080808;
-    cursor: pointer;
-}
-
+.menu button:hover,
 .back-link:hover {
-    text-decoration: underline;
-    color: #333;
+    background: #dcdcdc;
+}
+
+.back-link {
+    display: block;
+}
+
+/* 오른쪽 메인 영역 */
+.content {
+    flex: 1;
+    padding: 40px;
+    box-sizing: border-box;
+}
+
+/* 각 페이지 */
+.page {
+    width: 100%;
+}
+
+/* 카드 */
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 24px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+
+/* 오늘 학습 내부 요소 */
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 32px;
+}
+
+.card label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 22px;
+}
+
+.card select,
+.card textarea,
+.card input {
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    background: #fff;
+}
+
+.card button {
+    padding: 12px 18px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+.card button:hover {
+    background: #f0f0f0;
+}
+
+.row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.box {
+    border: 1px solid #ddd;
+    background: #fafafa;
+    padding: 18px;
+    font-size: 18px;
+    line-height: 1.7;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+}
+
+/* 홈 화면 */
+#page-home h1,
+#page-today h1,
+#page-free h1,
+#page-exam h1,
+#page-score h1,
+#page-token h1 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 48px;
+}
+
+/* 오늘 학습 선택줄 정리 */
+#step-select_unit select {
+    max-width: 700px;
+}
+
+#btn-start {
+    margin-top: 10px;
+}
+
+/* 모달 박스 */
+.modal-box {
+    width: 1500px;
+    max-width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.modal-body {
+    padding: 24px;
+    font-size: 18px;
+    line-height: 1.6;
+} 
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.modal-header button {
+    border: 1px solid #ccc;
+    background: #fff;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.modal-body {
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 20px 20px;
+    box-sizing: border-box;
+}
+
+.modal-footer button {
+    padding: 10px 16px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+.modal-footer button:hover,
+.modal-header button:hover {
+    background: #f0f0f0;
+}
+
+.solution-box {
+    border: 1px solid #ddd;
+    background: #fafafa;
+    padding: 16px;
+    margin-top: 12px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    line-height: 1.7;
+}
+
+/* textarea 기본 높이 */
+textarea {
+    resize: vertical;
+}
+
+#user-character{
+    width:90px;
+    height:90px;
+    object-fit:contain;
+}
+
+/* 전체 앱 구조 */
+.app-shell{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+}
+
+/* 상단 헤더 */
+.top-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 40px;
+    border-bottom:2px solid #ddd;
+    background:#fff;
+}
+
+/* 캐릭터 + 제목 */
+.top-left{
+    display:flex;
+    align-items:center;
+    gap:30px;
+}
+
+/* 캐릭터 이미지 */
+#user-character{
+    width:120px;
+    height:120px;
+    object-fit:contain;
+}
+
+/* 제목 */
+#sidebar-title{
+    font-size:50px;
+    font-weight:bold;
+}
+
+/* 로그아웃 버튼 */
+.logout-btn{
+    padding:12px 40px;
+    border-radius:25px;
+    font-size:18px;
+    border:1px solid #ccc;
+    background:#f5f5f5;
+    cursor:pointer;
+}
+
+/* 아래 영역 */
+.layout{
+    display:flex;
+    flex:1;
+}
+
+/* 사이드바 */
+.sidebar{
+    width:350px;
+    border-right:2px solid #ddd;
+    padding:20px;
+    background:#fafafa;
+}
+
+/* 메뉴 버튼 */
+.menu button{
+    width:100%;
+    padding:12px;
+    margin-bottom:10px;
+    border-radius:12px;
+    border:1px solid #ccc;
+    background:#fff;
+    cursor:pointer;
+}
+
+/* 메인 영역 */
+.content{
+    flex:1;
+    padding:40px;
+}
+
+.top-left{
+    display:flex;
+    align-items:center;
+    gap:30px;
+    cursor:pointer;
+}
+
+#step-select_unit{
+    margin-bottom: 500px;
+}
+
+/* ===== app 학습 모달 최종 정리 ===== */
+.modal-box {
+    width: 1300px;
+    max-width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #fff;
+    border: 1px solid #ccc;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #ddd;
+    background: #fff;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.modal-body {
+    padding: 24px;
+    box-sizing: border-box;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.modal-body textarea {
+    width: 100%;
+    min-height: 300px;
+    font-size: 18px;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    padding: 16px 20px 20px;
+    box-sizing: border-box;
+}
+
+.modal-footer button,
+#modal-student-submit,
+#modal-submit-btn {
+    padding: 14px 24px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+.solution-box {
+    border: 1px solid #ddd;
+    background: #fafafa;
+    padding: 16px;
+    margin-top: 12px;
+    box-sizing: border-box;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    font-size: 18px;
+}
+
+/* ===== 성적로그 전용 ===== */
+.score-dashboard h2 {
+    margin-top: 0;
+    margin-bottom: 14px;
+    font-size: 28px;
+}
+
+.score-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.summary-card {
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    padding: 18px 20px;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.summary-label {
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.summary-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #111;
+}
+
+.graph-card,
+.log-card {
+    background: #ffffff;
+    border: 1px solid #dcdcdc;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+}
+
+.graph-card svg {
+    display: block;
+    margin: 0 auto;
+}
+
+.score-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+.score-table th {
+    text-align: left;
+    padding: 14px 12px;
+    border-bottom: 2px solid #ddd;
+    background: #f7f7f7;
+}
+
+.score-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.score-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 6px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    background: #fff;
+}
+
+.status-badge.danger {
+    background: #fff1f1;
+    border-color: #f0b8b8;
+}
+
+.status-badge.up {
+    background: #f4f8ff;
+    border-color: #bfd3ff;
+}
+
+.status-badge.good {
+    background: #f4fff6;
+    border-color: #b9e3c1;
+}
+
+.status-badge.stable {
+    background: #f7f7f7;
+    border-color: #d5d5d5;
 }

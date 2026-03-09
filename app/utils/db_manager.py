@@ -81,7 +81,17 @@ def init_db():
         # 사용자 테이블
         c.execute('''CREATE TABLE IF NOT EXISTS users
                      (username TEXT PRIMARY KEY, password TEXT, current_unit TEXT)''')
-        
+
+        # 기존 users 테이블에 nickname, character 컬럼이 없으면 추가
+        c.execute("PRAGMA table_info(users)")
+        columns = [row[1] for row in c.fetchall()]
+
+        if "nickname" not in columns:
+            c.execute("ALTER TABLE users ADD COLUMN nickname TEXT")
+
+        if "character" not in columns:
+            c.execute("ALTER TABLE users ADD COLUMN character TEXT")
+
         # 학습 이력 테이블
         c.execute('''CREATE TABLE IF NOT EXISTS learning_history
                      (id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -90,14 +100,14 @@ def init_db():
                       unit TEXT, 
                       is_correct INTEGER, 
                       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)''')
-        
-        # ✅ [변경] 테스트 계정 비밀번호를 bcrypt 해시로 저장
-        # 기존: INSERT OR IGNORE INTO users VALUES ('student01', '1234', 'None')
-        # → 평문 '1234'가 DB에 그대로 저장되는 보안 취약점
+
         hashed_pw = hash_password("1234")
         c.execute(
-            "INSERT OR IGNORE INTO users (username, password, current_unit) VALUES (?, ?, ?)",
-            ('student01', hashed_pw, 'None')
+            """
+            INSERT OR IGNORE INTO users (username, password, current_unit, nickname, character)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            ('student01', hashed_pw, 'None', '학생1', 'bunny')
         )
 
 
@@ -119,24 +129,32 @@ def get_user(username: str) -> dict | None:
             # 로그인 성공 → JWT 발급
     """
     with get_db() as (conn, c):
-        # ✅ [변경] f-string 대신 파라미터 바인딩(?)으로 SQL Injection 방지
-        # 기존 취약 코드: f"SELECT * FROM users WHERE username='{username}'"
-        # → username에 "admin'--" 같은 값이 들어오면 쿼리 구조 자체가 변형됨
         c.execute(
-            "SELECT username, password, current_unit FROM users WHERE username = ?",
+            """
+            SELECT username, password, current_unit, nickname, character
+            FROM users
+            WHERE username = ?
+            """,
             (username,)
         )
         row = c.fetchone()
-    
+
     if row is None:
         return None
-    return {"username": row[0], "password": row[1], "current_unit": row[2]}
+
+    return {
+        "username": row[0],
+        "password": row[1],
+        "current_unit": row[2],
+        "nickname": row[3],
+        "character": row[4]
+    }
 
 
 # ──────────────────────────────────────────────
 # 3. 유저 등록
 # ──────────────────────────────────────────────
-def create_user(username: str, plain_password: str) -> bool:
+def create_user(username: str, plain_password: str, nickname: str, character: str) -> bool:
     """
     새 유저를 등록합니다. 이미 존재하면 False 반환.
     
@@ -148,12 +166,14 @@ def create_user(username: str, plain_password: str) -> bool:
         hashed_pw = hash_password(plain_password)
         with get_db() as (conn, c):
             c.execute(
-                "INSERT INTO users (username, password, current_unit) VALUES (?, ?, ?)",
-                (username, hashed_pw, 'None')
+                """
+                INSERT INTO users (username, password, current_unit, nickname, character)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (username, hashed_pw, 'None', nickname, character)
             )
         return True
     except sqlite3.IntegrityError:
-        # username PRIMARY KEY 중복 시
         return False
 
 
@@ -210,3 +230,7 @@ def get_incorrect_problems(username: str) -> list[dict]:
 
     df = pd.read_csv(CSV_PATH)
     return df[df['ID'].astype(str).isin(incorrect_ids)].to_dict('records')
+
+def delete_user(username: str):
+    with get_db() as (conn, c):
+        c.execute("DELETE FROM users WHERE username = ?", (username,))

@@ -11,7 +11,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
-from app.utils.db_manager import get_user, verify_password
+from app.utils.db_manager import get_user, verify_password, create_user
 
 load_dotenv()
 
@@ -58,7 +58,14 @@ class UserInfo(BaseModel):
     """GET /auth/me 응답 형식."""
     username: str
     current_unit: str
-
+    nickname: str | None = None
+    character: str | None = None
+    
+class RegisterRequest(BaseModel):
+    username: str
+    password: str
+    nickname: str
+    character: str
 
 # ─────────────────────────────────────────────────────────
 # ③ OAuth2PasswordBearer 설정
@@ -200,7 +207,23 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
         token_type="bearer",
         username=user["username"]
     )
+    
+@router.post("/register")
+async def register(user: RegisterRequest):
+    success = create_user(
+        username=user.username,
+        plain_password=user.password,
+        nickname=user.nickname,
+        character=user.character
+    )
 
+    if not success:
+        raise HTTPException(
+            status_code=400,
+            detail="이미 존재하는 아이디입니다."
+        )
+
+    return {"message": "회원가입이 완료되었습니다."}
 
 # ─────────────────────────────────────────────────────────
 # ⑧ GET /auth/me  ─  현재 로그인 유저 정보 조회
@@ -222,7 +245,9 @@ async def get_me(current_user: dict = Depends(get_current_user)):
     """
     return UserInfo(
         username=current_user["username"],
-        current_unit=current_user.get("current_unit", "None")
+        current_unit=current_user.get("current_unit", "None"),
+        nickname=current_user.get("nickname"),
+        character=current_user.get("character")
     )
 
 
