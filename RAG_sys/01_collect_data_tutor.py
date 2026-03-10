@@ -53,7 +53,8 @@ for qid, p_info in problems.items():
             '단원': p_info['topic'],
             '난이도': p_info['difficulty'],
             '문제': p_info['question'],
-            '풀이및정답': answers[qid]
+            '정답': answers[qid],
+            '풀이': answers[qid]
         })
 
 # 3. 결과 저장

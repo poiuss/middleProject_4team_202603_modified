@@ -7,24 +7,14 @@ from contextlib import contextmanager
 DB_PATH = 'database/user_db.sqlite'
 CSV_PATH = 'data/processed/math_tutor_dataset.csv'
 
-# ──────────────────────────────────────────────
-# 🔧 내부 유틸: DB 연결을 Context Manager로 관리
-# with 블록이 끝나면 자동으로 commit & close 처리
-# ──────────────────────────────────────────────
 
 @contextmanager
 def get_db():
-    """
-    DB 연결을 안전하게 열고 닫는 Context Manager.
-    
-    [변경 이유]
-    기존: 함수마다 conn = sqlite3.connect(...) / conn.close() 를 반복
-    → 예외 발생 시 close()가 호출되지 않아 연결이 누수될 위험이 있었음.
-    변경: with get_db() as (conn, c): 로 호출하면 자동으로 정리됨.
-    """
     if not os.path.exists('database'):
         os.makedirs('database')
+
     conn = sqlite3.connect(DB_PATH)
+
     try:
         c = conn.cursor()
         yield conn, c
@@ -36,36 +26,13 @@ def get_db():
         conn.close()
 
 
-# ──────────────────────────────────────────────
-# 🔐 내부 유틸: bcrypt 비밀번호 해싱 / 검증
-# ──────────────────────────────────────────────
 def hash_password(plain_password: str) -> str:
-    """
-    평문 비밀번호를 bcrypt로 해싱하여 반환합니다.
-    
-    [변경 이유]
-    기존: 비밀번호를 '1234' 형태로 DB에 평문 저장
-    → DB가 유출되면 비밀번호가 그대로 노출됨.
-    변경: bcrypt는 해싱할 때마다 내부에 salt를 자동 생성하여
-          같은 비밀번호도 매번 다른 해시값이 나와 보안에 강함.
-    
-    예시:
-        hash_password("1234")
-        → "$2b$12$eW3Fq...xyz" (매번 다른 값)
-    """
     salt = bcrypt.gensalt()
     hashed = bcrypt.hashpw(plain_password.encode('utf-8'), salt)
     return hashed.decode('utf-8')
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    입력한 평문 비밀번호가 DB의 해시값과 일치하는지 검증합니다.
-    
-    예시:
-        verify_password("1234", "$2b$12$eW3Fq...xyz") → True
-        verify_password("wrong", "$2b$12$eW3Fq...xyz") → False
-    """
     return bcrypt.checkpw(
         plain_password.encode('utf-8'),
         hashed_password.encode('utf-8')
@@ -73,16 +40,19 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 # ──────────────────────────────────────────────
-# 1. 데이터베이스 초기화 (테이블 생성)
+# DB 초기화
 # ──────────────────────────────────────────────
+
 def init_db():
     with get_db() as (conn, c):
 
-        # 사용자 테이블
-        c.execute('''CREATE TABLE IF NOT EXISTS users
-                     (username TEXT PRIMARY KEY, password TEXT, current_unit TEXT)''')
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS users
+            (username TEXT PRIMARY KEY,
+             password TEXT,
+             current_unit TEXT)
+        """)
 
-        # 기존 users 테이블에 nickname, character 컬럼이 없으면 추가
         c.execute("PRAGMA table_info(users)")
         columns = [row[1] for row in c.fetchall()]
 
@@ -92,19 +62,35 @@ def init_db():
         if "character" not in columns:
             c.execute("ALTER TABLE users ADD COLUMN character TEXT")
 
-        # 학습 이력 테이블
-        c.execute('''CREATE TABLE IF NOT EXISTS learning_history
-                     (id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                      username TEXT, 
-                      problem_id TEXT, 
-                      unit TEXT, 
-                      is_correct INTEGER, 
-                      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS learning_history
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             username TEXT,
+             problem_id TEXT,
+             unit TEXT,
+             is_correct INTEGER,
+             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)
+        """)
+
+        # ⭐ 시험 결과 테이블 (주석님 코드 추가)
+        c.execute("""
+            CREATE TABLE IF NOT EXISTS exam_results
+            (id INTEGER PRIMARY KEY AUTOINCREMENT,
+             username TEXT,
+             unit TEXT,
+             score INTEGER,
+             total_questions INTEGER,
+             wrong_numbers TEXT,
+             feedback TEXT,
+             timestamp DATETIME DEFAULT CURRENT_TIMESTAMP)
+        """)
 
         hashed_pw = hash_password("1234")
+
         c.execute(
             """
-            INSERT OR IGNORE INTO users (username, password, current_unit, nickname, character)
+            INSERT OR IGNORE INTO users
+            (username, password, current_unit, nickname, character)
             VALUES (?, ?, ?, ?, ?)
             """,
             ('student01', hashed_pw, 'None', '학생1', 'bunny')
@@ -112,23 +98,13 @@ def init_db():
 
 
 # ──────────────────────────────────────────────
-# 2. 유저 조회 (로그인 인증용)
+# 유저 조회
 # ──────────────────────────────────────────────
+
 def get_user(username: str) -> dict | None:
-    """
-    username으로 유저를 조회합니다. 없으면 None 반환.
-    
-    [변경 이유]
-    기존: login.py에서 SELECT * WHERE username=? AND password=? 로 평문 비밀번호를 직접 비교
-    → 비밀번호 해싱 도입 후에는 DB에서 유저를 먼저 가져온 뒤,
-      verify_password()로 비교하는 방식으로 변경해야 함.
-    
-    사용 예시 (auth.py 라우터에서):
-        user = get_user("student01")
-        if user and verify_password(입력비밀번호, user["password"]):
-            # 로그인 성공 → JWT 발급
-    """
+
     with get_db() as (conn, c):
+
         c.execute(
             """
             SELECT username, password, current_unit, nickname, character
@@ -137,6 +113,7 @@ def get_user(username: str) -> dict | None:
             """,
             (username,)
         )
+
         row = c.fetchone()
 
     if row is None:
@@ -152,41 +129,40 @@ def get_user(username: str) -> dict | None:
 
 
 # ──────────────────────────────────────────────
-# 3. 유저 등록
+# 유저 생성
 # ──────────────────────────────────────────────
+
 def create_user(username: str, plain_password: str, nickname: str, character: str) -> bool:
-    """
-    새 유저를 등록합니다. 이미 존재하면 False 반환.
-    
-    [추가 이유]
-    기존 코드에는 회원가입 함수가 없었음.
-    FastAPI 라우터에서 POST /auth/register 엔드포인트 구현 시 사용.
-    """
+
     try:
+
         hashed_pw = hash_password(plain_password)
+
         with get_db() as (conn, c):
+
             c.execute(
                 """
-                INSERT INTO users (username, password, current_unit, nickname, character)
+                INSERT INTO users
+                (username, password, current_unit, nickname, character)
                 VALUES (?, ?, ?, ?, ?)
                 """,
                 (username, hashed_pw, 'None', nickname, character)
             )
+
         return True
+
     except sqlite3.IntegrityError:
         return False
 
 
 # ──────────────────────────────────────────────
-# 4. 학습 결과 저장
+# 학습 결과 저장
 # ──────────────────────────────────────────────
+
 def save_history(username: str, problem_id: str, unit: str, is_correct: bool):
-    """
-    문제 풀이 결과를 학습 이력에 저장합니다.
-    
-    [변경 사항] 기존 로직 유지, get_db() Context Manager로 교체
-    """
+
     with get_db() as (conn, c):
+
         c.execute(
             "INSERT INTO learning_history (username, problem_id, unit, is_correct) VALUES (?, ?, ?, ?)",
             (username, str(problem_id), unit, 1 if is_correct else 0)
@@ -194,43 +170,102 @@ def save_history(username: str, problem_id: str, unit: str, is_correct: bool):
 
 
 # ──────────────────────────────────────────────
-# 5. 학생의 전체 학습 이력 조회 (리포트용)
+# 학습 기록 조회
 # ──────────────────────────────────────────────
+
 def get_user_history(username: str) -> pd.DataFrame:
-    """
-    [변경 이유]
-    기존: f"SELECT ... WHERE username = '{username}'"
-    → SQL Injection 취약점. 파라미터 바인딩으로 교체.
-    
-    pd.read_sql_query()는 파라미터를 두 번째 인자(params)로 받음.
-    """
+
     with get_db() as (conn, c):
+
         query = "SELECT unit, is_correct, timestamp FROM learning_history WHERE username = ?"
+
         df = pd.read_sql_query(query, conn, params=(username,))
+
     return df
 
 
 # ──────────────────────────────────────────────
-# 6. 틀린 문제 목록 조회 (오답 노트용)
+# 오답 문제 조회
 # ──────────────────────────────────────────────
+
 def get_incorrect_problems(username: str) -> list[dict]:
-    """
-    [변경 이유]
-    기존: f-string으로 username 직접 삽입 → SQL Injection 취약점
-    변경: params=(username,) 파라미터 바인딩으로 교체
-    """
+
     with get_db() as (conn, c):
+
         query = """
-            SELECT problem_id FROM learning_history 
+            SELECT problem_id FROM learning_history
             WHERE username = ?
-            GROUP BY problem_id 
+            GROUP BY problem_id
             HAVING SUM(is_correct) = 0
         """
-        incorrect_ids = pd.read_sql_query(query, conn, params=(username,))['problem_id'].tolist()
+
+        incorrect_ids = pd.read_sql_query(
+            query, conn, params=(username,)
+        )['problem_id'].tolist()
 
     df = pd.read_csv(CSV_PATH)
+
     return df[df['ID'].astype(str).isin(incorrect_ids)].to_dict('records')
 
+
 def delete_user(username: str):
+
     with get_db() as (conn, c):
-        c.execute("DELETE FROM users WHERE username = ?", (username,))
+
+        c.execute(
+            "DELETE FROM users WHERE username = ?",
+            (username,)
+        )
+
+
+# ──────────────────────────────────────────────
+# 시험 결과 저장 (주석님 기능)
+# ──────────────────────────────────────────────
+
+def save_exam_result(username: str, unit: str, score: int, total_questions: int,
+                     wrong_numbers: str, feedback: str):
+
+    with get_db() as (conn, c):
+
+        c.execute(
+            """
+            INSERT INTO exam_results
+            (username, unit, score, total_questions, wrong_numbers, feedback)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (username, unit, score, total_questions, wrong_numbers, feedback)
+        )
+
+
+# ──────────────────────────────────────────────
+# 시험 결과 조회
+# ──────────────────────────────────────────────
+
+def get_exam_results(username: str) -> list:
+
+    with get_db() as (conn, c):
+
+        c.execute(
+            """
+            SELECT id, unit, score, total_questions, wrong_numbers, feedback, timestamp
+            FROM exam_results
+            WHERE username = ?
+            ORDER BY timestamp ASC
+            """,
+            (username,)
+        )
+
+        rows = c.fetchall()
+
+    return [
+        {
+            "id": r[0],
+            "unit": r[1],
+            "score": r[2],
+            "total_questions": r[3],
+            "wrong_numbers": r[4],
+            "feedback": r[5],
+            "timestamp": r[6]
+        }
+        for r in rows
+    ]

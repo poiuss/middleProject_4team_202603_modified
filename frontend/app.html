@@ -39,13 +39,19 @@
      <main class="content">
 
       <!-- 홈 -->
-      <section id="page-home" class="page" style="display:none;">
-        <h1>👋 환영해</h1>
-        <div class="card">
+    <section id="page-home" class="page" style="display:none;">
+      <div class="hero-card">
+        <div class="hero-text">
+          <h1>👋 환영해</h1>
           <h2>오늘도 재밌게 공부해보자!</h2>
           <p>왼쪽 메뉴에서 원하는 학습을 선택해줘.</p>
         </div>
-      </section>
+
+        <video id="homeVideo" class="hero-video" autoplay controls playsinline preload="auto">
+          <source src="assets/animations/애니샘플2.mp4" type="video/mp4">
+        </video>
+      </div>
+    </section>
 
       <!-- 오늘 학습 -->
       <section id="page-today" class="page" style="display:none;">
@@ -116,13 +122,39 @@
       <!-- 시험 -->
       <section id="page-exam" class="page" style="display:none;">
         <h1>📝 시험</h1>
-        <div class="card">시험 화면 자리</div>
+
+        <!-- 단원 선택 + 버튼 -->
+        <div class="card">
+          <h2>시험 단원 선택</h2>
+          <select id="exam-unit-select">
+            <option value="">단원 선택</option>
+          </select>
+          <div class="row" style="margin-top:14px;">
+            <button id="exam-make-btn">시험지 만들기</button>
+            <button id="exam-start-btn" disabled>시험 시작</button>
+          </div>
+
+          <!-- 타이머 -->
+          <div id="exam-timer-box" class="box" style="margin-top:20px; display:none;">
+            ⏰ 남은 시간 : <span id="exam-timer-display">40:00</span>
+          </div>
+        </div>
+
+        <!-- 문제 목록 (동적 생성) -->
+        <div id="exam-questions-container" style="display:none;"></div>
+
+        <!-- 답안지 제출 버튼 -->
+        <div id="exam-submit-area" style="display:none;" class="card">
+          <button id="exam-submit-btn" type="button">답안지 제출</button>
+        </div>
       </section>
 
       <!-- 성적로그 -->
       <section id="page-score" class="page" style="display:none;">
         <h1>📊 성적로그</h1>
-        <div class="card">성적로그 화면 자리</div>
+        <div class="card" id="score-log-card">
+          <p style="color:#999;">로딩 중...</p>
+        </div>
       </section>
 
       <!-- 토큰로그 -->
@@ -171,6 +203,22 @@
     </div>
   </div>
 </div>
+
+  <!-- 시험 결과 모달 -->
+  <div id="examResultModal" class="modal hidden" style="display:none;">
+    <div class="modal-box" id="examResultModalBox">
+      <div class="modal-header">
+        <h2>📋 시험 결과</h2>
+      </div>
+      <div class="modal-body" id="examResultBody">
+        <!-- section3.js에서 동적으로 채워짐 -->
+      </div>
+      <div class="modal-footer">
+        <button id="examTtsBtn" type="button">음성 듣기</button>
+        <button id="examResultConfirmBtn" type="button">확인</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/section1.js"></script>
   <script src="js/section2.js"></script>

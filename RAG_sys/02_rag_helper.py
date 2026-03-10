@@ -36,7 +36,7 @@ def build_vector_db():
         
         documents = batch_df['문제'].tolist()
         # metadata 내의 NaN(결측치)을 처리하지 않으면 오류가 날 수 있어 보강합니다.
-        metadatas = batch_df[['ID', '단원', '난이도', '풀이및정답']].fillna("없음").to_dict('records')
+        metadatas = batch_df[['ID', '단원', '난이도', '정답', '풀이']].fillna("없음").to_dict('records')
         ids = batch_df['ID'].astype(str).tolist()
         
         try:

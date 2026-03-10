@@ -32,7 +32,6 @@ function setMathText(targetId, text) {
 
   el.innerText = prepareMathDisplayText(text);
 
-  // 이 부분을 try-catch로 감쌉니다.
   try {
     if (typeof renderMath === "function") {
       renderMath(targetId);
@@ -41,7 +40,6 @@ function setMathText(targetId, text) {
     }
   } catch (e) {
     console.error("수식 렌더링 중 오류 발생:", e);
-    // 에러가 나더라도 페이지 새로고침으로 이어지지 않도록 여기서 에러를 잡아줍니다.
   }
 }
 
@@ -98,13 +96,7 @@ function setResultAction(handler, label) {
   oldBtn.parentNode.replaceChild(newBtn, oldBtn);
 }
 
-function showSolutionModal(
-  title,
-  content,
-  buttonText,
-  onNext,
-  showTts = false,
-) {
+function showSolutionModal(title, content, buttonText, onNext, showTts = false) {
   resetModal();
 
   const titleEl = document.getElementById("resultTitle");
@@ -139,9 +131,9 @@ function showInputModal(title, placeholder, buttonText, onSubmit) {
 
   if (msgEl) {
     msgEl.innerHTML = `
-            <textarea id="modal-student-text" rows="6" placeholder="${placeholder}" style="width:100%;padding:10px;box-sizing:border-box;"></textarea>
-            <button id="modal-student-submit" type="button" style="margin-top:12px;">${buttonText}</button>
-        `;
+      <textarea id="modal-student-text" rows="6" placeholder="${placeholder}" style="width:100%;padding:10px;box-sizing:border-box;"></textarea>
+      <button id="modal-student-submit" type="button" style="margin-top:12px;">${buttonText}</button>
+    `;
   }
 
   openResultModal();
@@ -179,17 +171,15 @@ function showQuestionModal(prob, imageB64 = "") {
 
   if (msgEl) {
     msgEl.innerHTML = `
-            <div id="modal-problem-text"></div>
-            ${imageB64 ? `<img src="data:image/png;base64,${imageB64}" style="max-width:100%;margin-top:12px;">` : ""}
-            <textarea id="modal-answer-input" rows="5" placeholder="정답과 풀이를 적어주세요." style="width:100%;padding:10px;margin-top:12px;box-sizing:border-box;"></textarea>
-            <button id="modal-submit-btn" type="button" style="margin-top:12px;">제출하기</button>
-        `;
+      <div id="modal-problem-text"></div>
+      ${imageB64 ? `<img src="data:image/png;base64,${imageB64}" style="max-width:100%;margin-top:12px;">` : ""}
+      <textarea id="modal-answer-input" rows="5" placeholder="정답과 풀이를 적어주세요." style="width:100%;padding:10px;margin-top:12px;box-sizing:border-box;"></textarea>
+      <button id="modal-submit-btn" type="button" style="margin-top:12px;">제출하기</button>
+    `;
 
     const p = document.getElementById("modal-problem-text");
     if (p) {
-      p.innerText = prepareMathDisplayText(
-        prob["문제"] ?? "문제를 불러올 수 없어요.",
-      );
+      p.innerText = prepareMathDisplayText(prob["문제"] ?? "문제를 불러올 수 없어요.");
       renderMath("modal-problem-text");
     }
   }
@@ -198,15 +188,15 @@ function showQuestionModal(prob, imageB64 = "") {
 
   const submitBtn = document.getElementById("modal-submit-btn");
   if (submitBtn) {
-      submitBtn.onclick = async (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          submitBtn.disabled = true;
-          submitBtn.blur();
+    submitBtn.onclick = async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      submitBtn.disabled = true;
+      submitBtn.blur();
 
-          const answer = document.getElementById("modal-answer-input")?.value || "";
-          await submitCurrentAnswer(answer);
-      };
+      const answer = document.getElementById("modal-answer-input")?.value || "";
+      await submitCurrentAnswer(answer);
+    };
   }
 }
 
@@ -214,46 +204,46 @@ function showQuestionModal(prob, imageB64 = "") {
 // 최종 피드백 모달
 //───────────────────────────────────────
 function showFinalFeedbackModal(feedback, isCorrect) {
-    const feedbackText = document.getElementById("feedbackText");
-    const retryBtn = document.getElementById("feedbackRetryBtn");
-    const nextUnitBtn = document.getElementById("feedbackNextUnitBtn");
-    const closeBtn = document.getElementById("closeFeedbackModalBtn");
+  const feedbackText = document.getElementById("feedbackText");
+  const retryBtn = document.getElementById("feedbackRetryBtn");
+  const nextUnitBtn = document.getElementById("feedbackNextUnitBtn");
+  const closeBtn = document.getElementById("closeFeedbackModalBtn");
 
-    if (feedbackText) {
-        feedbackText.innerText = prepareMathDisplayText(feedback);
-        renderMath("feedbackText");
-    }
+  if (feedbackText) {
+    feedbackText.innerText = prepareMathDisplayText(feedback);
+    renderMath("feedbackText");
+  }
 
-    if (retryBtn) {
-        retryBtn.style.display = "inline-block";
-        retryBtn.disabled = true;
-        retryBtn.onclick = async () => {
-            closeFeedbackModal();
-            await loadProblem();
-        };
-    }
+  if (retryBtn) {
+    retryBtn.style.display = "inline-block";
+    retryBtn.disabled = true;
+    retryBtn.onclick = async () => {
+      closeFeedbackModal();
+      await loadProblem();
+    };
+  }
 
-    if (nextUnitBtn) {
-        nextUnitBtn.style.display = "inline-block";
-        nextUnitBtn.disabled = true;
-        nextUnitBtn.onclick = () => {
-            closeFeedbackModal();
-            localStorage.setItem("step", "select_unit");
-            goPage("today");
-        };
-    }
+  if (nextUnitBtn) {
+    nextUnitBtn.style.display = "inline-block";
+    nextUnitBtn.disabled = true;
+    nextUnitBtn.onclick = () => {
+      closeFeedbackModal();
+      localStorage.setItem("step", "select_unit");
+      goPage("today");
+    };
+  }
 
-    if (closeBtn) {
-        closeBtn.disabled = true;
-    }
+  if (closeBtn) {
+    closeBtn.disabled = true;
+  }
 
-    openFeedbackModal();
+  openFeedbackModal();
 
-    setTimeout(() => {
-        if (retryBtn && retryBtn.style.display !== "none") retryBtn.disabled = false;
-        if (nextUnitBtn && nextUnitBtn.style.display !== "none") nextUnitBtn.disabled = false;
-        if (closeBtn) closeBtn.disabled = false;
-    }, 500);
+  setTimeout(() => {
+    if (retryBtn && retryBtn.style.display !== "none") retryBtn.disabled = false;
+    if (nextUnitBtn && nextUnitBtn.style.display !== "none") nextUnitBtn.disabled = false;
+    if (closeBtn) closeBtn.disabled = false;
+  }, 500);
 }
 
 //───────────────────────────────────────
@@ -298,6 +288,7 @@ function renderToday() {
 
         const data = await res.json();
         const explanation = data.explanation || "설명이 없습니다.";
+
         localStorage.setItem("current_explanation", explanation);
         logMathText("설명", explanation);
 
@@ -308,7 +299,7 @@ function renderToday() {
           () => {
             showStudentExplainModal(unit);
           },
-          true,
+          true
         );
       } catch {
         showSolutionModal(
@@ -316,7 +307,7 @@ function renderToday() {
           "설명을 불러오는 데 실패했어요.",
           "확인",
           () => {},
-          false,
+          false
         );
       }
     });
@@ -356,7 +347,7 @@ function showStudentExplainModal(unit) {
             async () => {
               await loadProblem();
             },
-            false,
+            false
           );
         } else {
           showSolutionModal(
@@ -364,9 +355,8 @@ function showStudentExplainModal(unit) {
             feedback,
             "보충 설명 듣고 문제 풀기 ➡️",
             () => {
-              const explanation =
-                localStorage.getItem("current_explanation") ||
-                "설명을 다시 불러올 수 없어요.";
+              const explanation = localStorage.getItem("current_explanation") || "설명이 없습니다.";
+
               logMathText("보충 설명", explanation);
 
               showSolutionModal(
@@ -376,10 +366,10 @@ function showStudentExplainModal(unit) {
                 async () => {
                   await loadProblem();
                 },
-                true,
+                true
               );
             },
-            false,
+            false
           );
         }
       } catch {
@@ -388,10 +378,10 @@ function showStudentExplainModal(unit) {
           "평가를 불러오는 데 실패했어요.",
           "확인",
           () => {},
-          false,
+          false
         );
       }
-    },
+    }
   );
 }
 
@@ -431,8 +421,7 @@ async function loadProblem() {
     const prob = data.problem;
 
     localStorage.setItem("current_problem", JSON.stringify(prob));
-    currentAnswer =
-      prob.answer || prob["정답"] || prob["답"] || prob["풀이및정답"] || "";
+    currentAnswer = prob.answer || prob["정답"] || prob["답"] || prob["풀이및정답"] || "";
     currentQuestionText = prob["문제"] || "";
 
     logMathText("문제", currentQuestionText);
@@ -445,7 +434,7 @@ async function loadProblem() {
       "문제를 불러오는 데 실패했어요.",
       "확인",
       () => {},
-      false,
+      false
     );
   }
 }
@@ -496,7 +485,6 @@ async function submitCurrentAnswer(answerText = null) {
     //     is_correct: data.is_correct,
     //   }),
     // });
-
   } catch (err) {
     console.error("제출 중 오류:", err);
     alert("채점 중 오류가 발생했어요.");

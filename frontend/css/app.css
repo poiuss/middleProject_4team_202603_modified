@@ -680,3 +680,20 @@ textarea {
     background: #f7f7f7;
     border-color: #d5d5d5;
 }
+
+/* ===== 메인 샘플 애니매이션 영상 ===== */
+.hero-card{
+  max-width:1100px;
+  margin:40px auto;
+}
+
+.hero-text{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+.hero-video{
+  width:100%;
+  display:block;
+  border-radius:18px;
+}

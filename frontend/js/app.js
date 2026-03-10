@@ -1,6 +1,10 @@
 const API = "http://localhost:8000";
 let currentPage = null;
 
+window.addEventListener("beforeunload", () => { // 페이지 새로고침 시 로그 출력
+  console.log("페이지 새로고침 발생");
+});
+
 //───────────────────────────────────────
 // 인증
 //───────────────────────────────────────
@@ -66,7 +70,8 @@ async function login() {
 //───────────────────────────────────────
 // 앱 초기화
 //───────────────────────────────────────
-async function initApp() {
+async function initApp() {  
+  console.log("initApp 다시 실행됨"); // 페이지 새로고침 시 initApp이 다시 실행되는지 확인하기 위한 로그
   
   const token = getToken();
 
@@ -91,7 +96,7 @@ async function initApp() {
     if (title) {
       title.innerText = ` ${user.nickname || user.username}의 math class🎓`;
     }
-    
+
     const img = document.getElementById("user-character");
     if (img && user.character) {
       img.src = `assets/images/${user.character}.png`;
@@ -109,6 +114,7 @@ async function initApp() {
 // 페이지 이동
 //───────────────────────────────────────
 function goPage(pageName) {
+
   const pages = document.querySelectorAll(".page");
   pages.forEach(p => (p.style.display = "none"));
 
@@ -121,6 +127,27 @@ function goPage(pageName) {
     localStorage.setItem("step", "select_unit");
     renderToday();
     loadUnits();
+  }
+
+  // 시험 페이지
+  if (pageName === "exam") {
+    if (typeof initExam === "function") {
+      initExam();
+    }
+  }
+
+  // 성적 로그
+  if (pageName === "score") {
+    if (typeof loadScoreLog === "function") {
+      loadScoreLog();
+    }
+  }
+
+  // ⭐ 지수 토큰 페이지 유지
+  if (pageName === "token") {
+    if (typeof renderTokenPage === "function") {
+      renderTokenPage();
+    }
   }
 }
 
@@ -141,15 +168,18 @@ function logout() {
 // MathJax 렌더
 //───────────────────────────────────────
 function renderMath(targetId) {
+
   if (!window.MathJax) return;
 
   if (targetId) {
+
     const el = document.getElementById(targetId);
     if (!el) return;
 
     MathJax.typesetPromise([el]).catch(err => {
       console.error("MathJax 렌더링 오류:", err);
     });
+
     return;
   }
 
@@ -162,6 +192,7 @@ function renderMath(targetId) {
 // 문제 입력 모달
 //───────────────────────────────────────
 function openResultModal() {
+
   const modal = document.getElementById("resultModal");
   if (!modal) return;
 
@@ -170,6 +201,7 @@ function openResultModal() {
 }
 
 function closeResultModal() {
+
   const modal = document.getElementById("resultModal");
   if (!modal) return;
 
@@ -181,6 +213,7 @@ function closeResultModal() {
 // 최종 피드백 모달
 //───────────────────────────────────────
 function openFeedbackModal() {
+
   const modal = document.getElementById("feedbackModal");
   if (!modal) return;
 
@@ -189,6 +222,7 @@ function openFeedbackModal() {
 }
 
 function closeFeedbackModal() {
+
   const modal = document.getElementById("feedbackModal");
   if (!modal) return;
 
@@ -200,6 +234,7 @@ function closeFeedbackModal() {
 // 앱 공통 이벤트
 //───────────────────────────────────────
 function bindAppEvents() {
+
   const closeBtn = document.getElementById("closeModalBtn");
   const closeFeedbackBtn = document.getElementById("closeFeedbackModalBtn");
 
@@ -218,12 +253,18 @@ function bindAppEvents() {
 // 캐릭터 선택
 //───────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+
   const characterButtons = document.querySelectorAll(".character-btn");
 
   characterButtons.forEach(button => {
+
     button.addEventListener("click", () => {
+
       characterButtons.forEach(btn => btn.classList.remove("selected"));
       button.classList.add("selected");
+
     });
+
   });
+
 });
